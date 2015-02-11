@@ -1,11 +1,13 @@
-//add text to the 2 divs in index
+//make sure the divs on index do not display
  document.getElementById('win').style.display='none';
  document.getElementById('lose').style.display='none';
  document.getElementById('timec').style.display='none';
  var d=document.getElementById('win');
- d.innerHTML+='<h1>You Win!Press space to play again.</h1>';
+ d.innerHTML+='<h3>You Win!Press space to play again.</h3>';
  var l=document.getElementById('lose');
- l.innerHTML+='<h1>You were hit. Try again</h1>';
+ l.innerHTML+='<h3>You were hit. Try again</h3>';
+
+
  // Enemies our player must avoid
 //takes 3 variables-x is x position, y is y position,s for img choice
 var Enemy = function(x,y,s) {
@@ -14,10 +16,10 @@ var Enemy = function(x,y,s) {
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+    this.sprite = s;
     this.x=x;
     this.y=y;
-
+    this.d='r';
 }
 
 // Update the enemy's position, required method for game
@@ -27,15 +29,22 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-
+    var collide;
     //moves across width of screen,then restart
+    if(this.d=='r'){//for right moving vehicles
     if (this.x < 505) {
-       this.x+=this.x*dt*Math.random()*8;
+     
+     this.x+=this.x*dt/.8*Math.random()*5;
        //checks for collisions
       // console.log(this.x-player.x);
       //                                                                                                                                                                                                                             console.log(this.y-player.y);
        if(Math.abs(this.x-player.x)<30 && Math.abs(this.y-player.y)<42){
        document.getElementById('lose').style.display='block';
+       player.collide+=1;
+       console.log(player.collide);
+       var b=document.getElementById('board');
+      
+       b.innerHTML='<h4>Collisions: ' + player.collide +'</h4>';
        player.x=230;
        player.y=330;
        }
@@ -44,7 +53,30 @@ Enemy.prototype.update = function(dt) {
         this.x=1*Math.random()*15;
          document.getElementById('lose').style.display='none';
 
-    }
+    }}
+
+    //handle left moving vehicles
+    if(this.d=='l'){
+      if (this.x > 1) {
+       this.x-=this.x*dt/.8*Math.random()*7;
+       //checks for collisions
+      // console.log(this.x-player.x);
+      //                                                                                                                                                                                                                             console.log(this.y-player.y);
+       if(Math.abs(this.x-player.x)<30 && Math.abs(this.y-player.y)<42){
+       document.getElementById('lose').style.display='block';
+       player.collide+=1;
+       var b=document.getElementById('board');
+       b.innerHTML='<h4>Collisions: ' + player.collide +'</h4>';
+       player.x=230;
+       player.y=330;
+       }
+
+    } else {
+        this.x=500-Math.random()*10;
+         document.getElementById('lose').style.display='none';
+
+
+    }}
 
     }
 
@@ -60,7 +92,7 @@ var Player = function(x,y,s){
     this.sprite = 'images/char-pink-girl.png';
     this.x=x;
     this.y=y;
-    this.timetocross=0;
+    this.collide=0;
 
 }
 // This class requires an update(), render() and
@@ -82,7 +114,7 @@ Player.prototype.update = function(r,i){
     
     //moves player 1 block on screen right or left
     if (i=="right" || i=="left") {
-    if (this.x+90*r>-38 && this.x+90*r<500) {
+    if (this.x+90*r>-34 && this.x+90*r<500) {
         this.x+=90*r;
 
     }
@@ -99,10 +131,14 @@ Player.prototype.update = function(r,i){
     
     document.getElementById('win').style.display='block';
     
-    var t=document.getElementById('timec');
+    
     if(i=='space'){
     this.y=330;
-    this.x=230;
+    this.x=222;
+    player.collide=0;
+    var b=document.getElementById('board');
+      
+       b.innerHTML='<h4>Collisions: 0</h4>';
    document.getElementById('win').style.display='none';
    }
    
@@ -140,11 +176,16 @@ Player.prototype.handleInput = function(i){
 
 
 // Now instantiate your objects.
-var p1 = new Player(230,330);
-var e1 = new Enemy(7,223);
-var e2 = new Enemy(10,135)
+var image1='images/Beetle-car.png';
+var image2='images/cyberscooty-truck.png';
+var image3='images/Dumptruck.png';
+var p1 = new Player(215,330);
+var e1 = new Enemy(7,223,image1);
+var e2 = new Enemy(490,135,image2);
+var e3 = new Enemy(15,55,image3);
+e2.d='l';
 // Place all enemy objects in an array called allEnemies
-var allEnemies = [e1,e2];
+var allEnemies = [e1,e2,e3];
 // Place the player object in a variable called player
 var player = p1;
 
